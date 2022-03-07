@@ -1,0 +1,206 @@
+<VRTDataset rasterXSize="8945" rasterYSize="2467">
+  <SRS dataAxisToSRSAxisMapping="2,1">GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]</SRS>
+  <GeoTransform> -1.7999990844726562e+02,  4.0245325088500969e-02,  0.0000000000000000e+00, -1.8426542282104452e+00,  0.0000000000000000e+00, -2.7629727888361700e-02</GeoTransform>
+  <VRTRasterBand dataType="Float32" band="1">
+    <NoDataValue>-9999</NoDataValue>
+    <ColorInterp>Gray</ColorInterp>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/georeferenced_tiffs/VIIRS_2019_12_01_T_0442.tiff</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="3000" RasterYSize="2313" DataType="Float32" BlockXSize="3000" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="3000" ySize="2313" />
+      <DstRect xOff="7364.54870135702" yOff="63.564779511547" xSize="840.561586768544" ySize="899.275776966907" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/georeferenced_tiffs/VIIRS_2019_12_01_T_0618.tiff</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="3000" RasterYSize="2323" DataType="Float32" BlockXSize="3000" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="3000" ySize="2323" />
+      <DstRect xOff="6807.77175849204" yOff="734.988156806882" xSize="1003.82987962024" ySize="914.818422539665" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/georeferenced_tiffs/VIIRS_2019_12_01_T_0300.tiff</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="3000" RasterYSize="2313" DataType="Float32" BlockXSize="3000" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="3000" ySize="2313" />
+      <DstRect xOff="8003.5461374405" yOff="127.073867070001" xSize="849.482475022324" ySize="900.068925643768" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/georeferenced_tiffs/VIIRS_2019_12_01_T_0624.tiff</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="3000" RasterYSize="2322" DataType="Float32" BlockXSize="3000" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="3000" ySize="2322" />
+      <DstRect xOff="6725.31543746556" yOff="0" xSize="833.48390894639" ySize="902.366102216531" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/georeferenced_tiffs/VIIRS_2019_12_01_T_0612.tiff</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="3000" RasterYSize="2341" DataType="Float32" BlockXSize="3000" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="3000" ySize="2341" />
+      <DstRect xOff="6756.21570490927" yOff="1433.14841756968" xSize="1554.11776632204" ySize="969.177082317128" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/georeferenced_tiffs/VIIRS_2019_12_01_T_0254.tiff</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="3000" RasterYSize="274" DataType="Float32" BlockXSize="3000" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="3000" ySize="274" />
+      <DstRect xOff="0" yOff="854.616128829423" xSize="8945.13377896385" ySize="920.587673975442" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/georeferenced_tiffs/VIIRS_2019_12_01_T_0430.tiff</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="3000" RasterYSize="430" DataType="Float32" BlockXSize="3000" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="3000" ySize="430" />
+      <DstRect xOff="0.00227486631487439" yOff="1490.41168796794" xSize="8945.13150409753" ySize="976.665173467877" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/georeferenced_tiffs/VIIRS_2019_12_01_T_0436.tiff</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="3000" RasterYSize="2335" DataType="Float32" BlockXSize="3000" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="3000" ySize="2335" />
+      <DstRect xOff="7443.51556702868" yOff="793.070704675613" xSize="1028.25910025909" ySize="921.212486950268" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="2">
+    <NoDataValue>-9999</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/georeferenced_tiffs/VIIRS_2019_12_01_T_0442.tiff</SourceFilename>
+      <SourceBand>2</SourceBand>
+      <SourceProperties RasterXSize="3000" RasterYSize="2313" DataType="Float32" BlockXSize="3000" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="3000" ySize="2313" />
+      <DstRect xOff="7364.54870135702" yOff="63.564779511547" xSize="840.561586768544" ySize="899.275776966907" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/georeferenced_tiffs/VIIRS_2019_12_01_T_0618.tiff</SourceFilename>
+      <SourceBand>2</SourceBand>
+      <SourceProperties RasterXSize="3000" RasterYSize="2323" DataType="Float32" BlockXSize="3000" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="3000" ySize="2323" />
+      <DstRect xOff="6807.77175849204" yOff="734.988156806882" xSize="1003.82987962024" ySize="914.818422539665" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/georeferenced_tiffs/VIIRS_2019_12_01_T_0300.tiff</SourceFilename>
+      <SourceBand>2</SourceBand>
+      <SourceProperties RasterXSize="3000" RasterYSize="2313" DataType="Float32" BlockXSize="3000" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="3000" ySize="2313" />
+      <DstRect xOff="8003.5461374405" yOff="127.073867070001" xSize="849.482475022324" ySize="900.068925643768" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/georeferenced_tiffs/VIIRS_2019_12_01_T_0624.tiff</SourceFilename>
+      <SourceBand>2</SourceBand>
+      <SourceProperties RasterXSize="3000" RasterYSize="2322" DataType="Float32" BlockXSize="3000" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="3000" ySize="2322" />
+      <DstRect xOff="6725.31543746556" yOff="0" xSize="833.48390894639" ySize="902.366102216531" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/georeferenced_tiffs/VIIRS_2019_12_01_T_0612.tiff</SourceFilename>
+      <SourceBand>2</SourceBand>
+      <SourceProperties RasterXSize="3000" RasterYSize="2341" DataType="Float32" BlockXSize="3000" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="3000" ySize="2341" />
+      <DstRect xOff="6756.21570490927" yOff="1433.14841756968" xSize="1554.11776632204" ySize="969.177082317128" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/georeferenced_tiffs/VIIRS_2019_12_01_T_0254.tiff</SourceFilename>
+      <SourceBand>2</SourceBand>
+      <SourceProperties RasterXSize="3000" RasterYSize="274" DataType="Float32" BlockXSize="3000" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="3000" ySize="274" />
+      <DstRect xOff="0" yOff="854.616128829423" xSize="8945.13377896385" ySize="920.587673975442" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/georeferenced_tiffs/VIIRS_2019_12_01_T_0430.tiff</SourceFilename>
+      <SourceBand>2</SourceBand>
+      <SourceProperties RasterXSize="3000" RasterYSize="430" DataType="Float32" BlockXSize="3000" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="3000" ySize="430" />
+      <DstRect xOff="0.00227486631487439" yOff="1490.41168796794" xSize="8945.13150409753" ySize="976.665173467877" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/georeferenced_tiffs/VIIRS_2019_12_01_T_0436.tiff</SourceFilename>
+      <SourceBand>2</SourceBand>
+      <SourceProperties RasterXSize="3000" RasterYSize="2335" DataType="Float32" BlockXSize="3000" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="3000" ySize="2335" />
+      <DstRect xOff="7443.51556702868" yOff="793.070704675613" xSize="1028.25910025909" ySize="921.212486950268" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="3">
+    <NoDataValue>-9999</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/georeferenced_tiffs/VIIRS_2019_12_01_T_0442.tiff</SourceFilename>
+      <SourceBand>3</SourceBand>
+      <SourceProperties RasterXSize="3000" RasterYSize="2313" DataType="Float32" BlockXSize="3000" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="3000" ySize="2313" />
+      <DstRect xOff="7364.54870135702" yOff="63.564779511547" xSize="840.561586768544" ySize="899.275776966907" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/georeferenced_tiffs/VIIRS_2019_12_01_T_0618.tiff</SourceFilename>
+      <SourceBand>3</SourceBand>
+      <SourceProperties RasterXSize="3000" RasterYSize="2323" DataType="Float32" BlockXSize="3000" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="3000" ySize="2323" />
+      <DstRect xOff="6807.77175849204" yOff="734.988156806882" xSize="1003.82987962024" ySize="914.818422539665" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/georeferenced_tiffs/VIIRS_2019_12_01_T_0300.tiff</SourceFilename>
+      <SourceBand>3</SourceBand>
+      <SourceProperties RasterXSize="3000" RasterYSize="2313" DataType="Float32" BlockXSize="3000" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="3000" ySize="2313" />
+      <DstRect xOff="8003.5461374405" yOff="127.073867070001" xSize="849.482475022324" ySize="900.068925643768" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/georeferenced_tiffs/VIIRS_2019_12_01_T_0624.tiff</SourceFilename>
+      <SourceBand>3</SourceBand>
+      <SourceProperties RasterXSize="3000" RasterYSize="2322" DataType="Float32" BlockXSize="3000" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="3000" ySize="2322" />
+      <DstRect xOff="6725.31543746556" yOff="0" xSize="833.48390894639" ySize="902.366102216531" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/georeferenced_tiffs/VIIRS_2019_12_01_T_0612.tiff</SourceFilename>
+      <SourceBand>3</SourceBand>
+      <SourceProperties RasterXSize="3000" RasterYSize="2341" DataType="Float32" BlockXSize="3000" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="3000" ySize="2341" />
+      <DstRect xOff="6756.21570490927" yOff="1433.14841756968" xSize="1554.11776632204" ySize="969.177082317128" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/georeferenced_tiffs/VIIRS_2019_12_01_T_0254.tiff</SourceFilename>
+      <SourceBand>3</SourceBand>
+      <SourceProperties RasterXSize="3000" RasterYSize="274" DataType="Float32" BlockXSize="3000" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="3000" ySize="274" />
+      <DstRect xOff="0" yOff="854.616128829423" xSize="8945.13377896385" ySize="920.587673975442" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/georeferenced_tiffs/VIIRS_2019_12_01_T_0430.tiff</SourceFilename>
+      <SourceBand>3</SourceBand>
+      <SourceProperties RasterXSize="3000" RasterYSize="430" DataType="Float32" BlockXSize="3000" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="3000" ySize="430" />
+      <DstRect xOff="0.00227486631487439" yOff="1490.41168796794" xSize="8945.13150409753" ySize="976.665173467877" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/georeferenced_tiffs/VIIRS_2019_12_01_T_0436.tiff</SourceFilename>
+      <SourceBand>3</SourceBand>
+      <SourceProperties RasterXSize="3000" RasterYSize="2335" DataType="Float32" BlockXSize="3000" BlockYSize="1" />
+      <SrcRect xOff="0" yOff="0" xSize="3000" ySize="2335" />
+      <DstRect xOff="7443.51556702868" yOff="793.070704675613" xSize="1028.25910025909" ySize="921.212486950268" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+</VRTDataset>
