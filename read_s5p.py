@@ -57,6 +57,7 @@ def netcdf_to_png(file, naming_string):
     warped_tif = gdal.Warp(saving_tiff+'full_tiff/s5p_full_'+naming_string+'.tiff', ds, geoloc=True, dstSRS="EPSG:4326", xRes=0.069, yRes=0.069, targetAlignedPixels=True, format='GTiff' )
 
     shape_file = 'new_aus_shape.shp'
+    # adfasdf
     
     crop_shape = gdal.Warp(saving_tiff+'cropped_tiff/s5p_cropped_'+naming_string+'.tiff', warped_tif, cutlineDSName=shape_file, cropToCutline=True)
     # crop_shape = gdal.Translate(saving_tiff+'cropped_tiff/s5p_cropped_'+naming_string+'.tiff', warped_tif, projWinSRS="EPSG:4326",projWin=crop_coordinates)
