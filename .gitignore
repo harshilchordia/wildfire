@@ -1,3 +1,5 @@
 /all_data
 id_rsa.pub
 id_rsa.pub.pub
+.DS_Store
+/__pycache__/
