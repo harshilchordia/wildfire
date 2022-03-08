@@ -11,7 +11,7 @@ from libs.ui import Digitizer
 # x = [[-49.207832336425774, 119.56679534912111], [-23.75498199462891, 160.94941711425778]]
 # Australia_Crop_coordinates = [[x[0][1],x[0][0]],[x[1][1],x[1][0]]]
 
-def run_digitizer(firepixels, rgb_image_path,rgb_coord, s5p_emission_path,s5p_aus_crop_coord):
+def run_digitizer(firepixels, rgb_image_path, s5p_emission_path,s5p_aus_crop_coord, rgb_coord):
     firepixels_geojson = {
         "type": "FeatureCollection",
         "features": firepixels

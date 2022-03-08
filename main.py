@@ -144,16 +144,16 @@ def run_digitizer(s5p_data, viirs_data, firepixels):
     s5p_png_path = 'all_data/s5p/png/'
     full_path = '/Users/harshilchordia/Desktop/KCL_Research/'
     digitizer_img_folder = 'current_digitizer_folder/'
-    Australia_Crop_coordinates = [[112.9530000000000030,-43.6770000000000067], [159.0450000000000159,-9.1770000000000067]]
+    Australia_Crop_coordinates = [[112.953,-43.67700000000001], [159.04500000000002,-9.177000000000007]]
+    # Australia_Crop_coordinates = [[-73.0020000000000095, -85.1460000000000150], [287.0400000000000205,81.1440000000000055]]
     
-
+    
     for s in s5p_data:
+        shutil.copyfile(full_path+s5p_png_path+s['file'], full_path+digitizer_img_folder+s['file'])
         for v in viirs_data:
             if check_overlap_rectangles(s['coord'], v['coord']):
                 shutil.copyfile(full_path+viirs_png_path+v['file'], full_path+digitizer_img_folder+v['file'])
-                shutil.copyfile(full_path+s5p_png_path+s['file'], full_path+digitizer_img_folder+s['file'])
-
-                digitizer.run_digitizer(firepixels, v['file'], v['coord'], s['file'], Australia_Crop_coordinates)
+                digitizer.run_digitizer(firepixels, v['file'], s['file'], Australia_Crop_coordinates, v['coord'])
                 pause()
 
    
@@ -161,17 +161,17 @@ def run_digitizer(s5p_data, viirs_data, firepixels):
         
 
 def run_loop_for_day(viirs_list, viirs_path, s5p_list, s5p_path, frp_list, frp_path, date, latest_time):
-    # firepixels = run_loop_frp(frp_list, frp_path)
-    # save_frp(firepixels, date, latest_time)
-    # viirs_coordinates = []
-    # for i in viirs_list:
-    #     file_path = viirs_path+"/"+i['file']
-    #     naming_string = date.strftime("%Y_%m_%d") + "_T_"+i['time'].strftime("%H%M")
+    firepixels = run_loop_frp(frp_list, frp_path)
+    save_frp(firepixels, date, latest_time)
+    viirs_coordinates = []
+    for i in viirs_list:
+        file_path = viirs_path+"/"+i['file']
+        naming_string = date.strftime("%Y_%m_%d") + "_T_"+i['time'].strftime("%H%M")
  
-    #     temp = viirs.process_viirs(file_path, naming_string)
-    #     temp = [[temp[0][1], temp[0][0]],[temp[1][1], temp[1][0]]]
-    #     viirs_coordinates.append(temp)
-
+        temp = viirs.process_viirs(file_path, naming_string)
+        temp = [[temp[0][1], temp[0][0]],[temp[1][1], temp[1][0]]]
+        viirs_coordinates.append(temp)
+        overlapp
     # s5p data processing
     for i in s5p_list:
         file_path = s5p_path+"/"+i['file']
@@ -191,7 +191,6 @@ if __name__ == '__main__':
     firepixels = run_loop_for_day(viirs_list, viirs_path, s5p_list, s5p_path, frp_list, frp_path, date, latest_time)
   
     #run digitizer after all processing
-
     s5_data = read_s5p_coord(date)
     viirs_data = read_viirs_coord(date)
     firepixels = read_frp(date)

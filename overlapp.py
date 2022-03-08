@@ -40,7 +40,7 @@ def georeference_png(pngfile, coordinates, naming_string, viirs_directory):
     y1 = coordinates[0][0]
     x2 = coordinates[1][1]
     y2 = coordinates[1][0]
-    geo_tiff = gdal.Translate(saving_string, pngfile, format='GTiff', noData="255",outputSRS="EPSG:4326", outputBounds=[x1,y1,x2,y2])
+    geo_tiff = gdal.Translate(saving_string, pngfile, format='GTiff', noData="255",outputSRS="EPSG:3857", outputBounds=[x1,y1,x2,y2])
 
 # georeference_png()
 def merge_viirs_tiff(current_directory, date):

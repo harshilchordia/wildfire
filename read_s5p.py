@@ -54,25 +54,51 @@ def netcdf_to_png(file, naming_string):
     saving_tiff = 'all_data/s5p/tiff/'
     ds = gdal.Open(file)
 
-    warped_tif = gdal.Warp(saving_tiff+'full_tiff/s5p_full_'+naming_string+'.tiff', ds, geoloc=True, dstSRS="EPSG:4326", xRes=0.069, yRes=0.069, targetAlignedPixels=True, format='GTiff' )
+    warped_tif = gdal.Warp(saving_tiff+'full_tiff/s5p_full_'+naming_string+'.tiff', ds, geoloc=True, dstSRS="EPSG:4326", xRes=0.069, yRes=0.069, targetAlignedPixels=True, format='GTiff', srcNodata=9.96921e+36, dstNodata=9.96921e+36)
 
     shape_file = 'new_aus_shape.shp'
     # adfasdf
     
-    crop_shape = gdal.Warp(saving_tiff+'cropped_tiff/s5p_cropped_'+naming_string+'.tiff', warped_tif, cutlineDSName=shape_file, cropToCutline=True)
+    crop_shape = gdal.Warp(saving_tiff+'cropped_tiff/s5p_cropped_'+naming_string+'.tiff', warped_tif, cutlineDSName=shape_file, cropToCutline=True, srcNodata=9.96921e+36, dstNodata=9.96921e+36)
     # crop_shape = gdal.Translate(saving_tiff+'cropped_tiff/s5p_cropped_'+naming_string+'.tiff', warped_tif, projWinSRS="EPSG:4326",projWin=crop_coordinates)
 
     # crop_tif = gdal.Translate('extrafiles/croppjned.tiff', warped_tif,format='GTiff', projWin=crop_coordinates)
     png_image_dir = 'all_data/s5p/png/s5p_'+naming_string+'.png'
 
+    # geoTransform = crop_shape.GetGeoTransform()
+    # minx = geoTransform[0]
+    # maxy = geoTransform[3]
+    # maxx = minx + geoTransform[1] * crop_shape.RasterXSize
+    # miny = maxy + geoTransform[5] * crop_shape.RasterYSize
+    # print ([minx, miny, maxx, maxy])
+
+
+
     # myarray = np.array(crop_shape.GetRasterBand(1).ReadAsArray())
-    # # myarray[myarray>1000000000000] = 1
-    # imageio.imwrite(png_image_dir, myarray)
+    # ndv = np.array(crop_shape.GetRasterBand(1).GetNoDataValue())
+   
 
-    pngimage = gdal.Translate(png_image_dir, crop_shape, format='PNG')
+    # print(myarray)
 
-    # lons, lats = get_tif_lat_lons(crop_shape)
-    # find_bounds(png_image_dir, lats, lons, naming_string)
+    # formatted = (myarray * 255 / np.max(myarray)).astype('uint8')
+
+
+    # formatted[formatted==0.0] = 255
+
+    # print(formatted)
+    # img = Image.fromarray(formatted)
+
+   
+
+
+    # imageio.imwrite(png_image_dir, img)
+    changed_proj = gdal.Translate('all_data/s5p/png/s5p_'+naming_string+'.tiff', crop_shape, outputSRS='EPSG:3857')
+
+
+    pngimage = gdal.Translate(png_image_dir, changed_proj, format='PNG')
+
+    lons, lats = get_tif_lat_lons(crop_shape)
+    find_bounds(png_image_dir, lats, lons, naming_string)
     
 
     
