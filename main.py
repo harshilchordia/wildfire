@@ -2,12 +2,16 @@ import datetime
 import json
 import os
 import shutil
+
+#Project files
 import frp_himawari
 import read_s5p
 import viirs
 import digitizer
 
-all_dirs = {    'viirs_raw':        'all_data/viirs/raw_data',
+full_path = '/Users/harshilchordia/Desktop/KCL_Research'
+
+all_dir = {     'viirs_raw':        'all_data/viirs/raw_data',
                 'viirs_png':        'all_data/viirs/png',
                 'viirs_json':       'all_data/viirs/json',
                 's5p_png':          'all_data/s5p/png',
@@ -16,11 +20,19 @@ all_dirs = {    'viirs_raw':        'all_data/viirs/raw_data',
                 's5p_crop_tif':     'all_data/s5p/tiff/crop',
                 's5p_full_tif':     'all_data/s5p/tiff/full',
                 'himawari_raw':     'all_data/Himawari-8',
-                'himawari_json':    'all_data/Himawari-8/json_dumps' }
+                'frp_json':         'all_data/Himawari-8/json_dumps', 
+                'digitise_img':     'current_digitizer_folder'  
+            }
+
+shape_file = 'shapingfile.shp'
+Australia_Shape_Coord = [[112.953,-43.67700000000001], [159.04500000000002,-9.177000000000007]]
+
+
+
 
 def createdirs():
     
-    for dir in all_dirs.values():
+    for dir in all_dir.values():
         print(dir)
         if not os.path.exists(dir):
             os.makedirs(dir)
@@ -37,7 +49,7 @@ def convertDate(date_entry):
 def fetch_VIIRS(date):
     viirs_list = []
     day_number = date.strftime('%-j')
-    for file in os.listdir(all_dirs['viirs_raw']):
+    for file in os.listdir(all_dir['viirs_raw']):
         filename_start = 'NPP_VMAES_L1.A'+str(date.year)+str(day_number)
         if file.startswith(filename_start):
             t = file[22:26]
@@ -48,7 +60,7 @@ def fetch_VIIRS(date):
 
 def fetch_S5P(date):
     s5p_list = []
-    for file in os.listdir(all_dirs['s5p_raw']):
+    for file in os.listdir(all_dir['s5p_raw']):
         filename_start = 'S5P_OFFL_L2__CO_____'+str(date.year)+str(date.strftime('%m'))+str(date.strftime('%d'))
         if file.startswith(filename_start):
             t = file[29:33]
@@ -71,7 +83,7 @@ def find_latest_time(viirs_list, s5p_list):
 
 
 def fetch_FRP(date, latest_time):
-    himawari_dir = all_dirs['himawari_raw'] + '/Himawari-8/' + str(date.year) + '/' + str(date.strftime('%m')) + '/' + str(date.strftime('%d'))
+    himawari_dir = all_dir['himawari_raw'] + '/' + str(date.year) + '/' + str(date.strftime('%m')) + '/' + str(date.strftime('%d'))
     frp_list = []
     for file in os.listdir(himawari_dir):
         filename_start = 'CAMS__HMWR_FRP-PIXEL-ListProduct_HMWR-FD_'+str(date.year)+str(date.strftime('%m'))+str(date.strftime('%d'))
@@ -83,7 +95,7 @@ def fetch_FRP(date, latest_time):
     
     return frp_list, himawari_dir
             
-def run_loop_frp(frp_list,frp_path):
+def fetch_day_frp(frp_list,frp_path):
     firepixels = []
     for i in frp_list:
         himawari_data = frp_himawari.extract_data_h5(frp_path+'/'+i['file'])
@@ -99,15 +111,14 @@ def run_loop_frp(frp_list,frp_path):
 def save_frp(firepixels, date, latest_time):
 
     naming_string = date.strftime('%Y_%m_%d')+'_till_'+ latest_time.strftime('%H%M')
-    bboxfile = all_dirs['himawari_json']+'/frp_' + naming_string + '.js'
+    bboxfile = all_dir['frp_json']+'/frp_' + naming_string + '.js'
 
     with open(bboxfile, 'w') as file:
         json.dump(firepixels, file)
 
 
 def read_frp(date):
-    dir= 'all_data/Himawari-8/json_dumps'
-    for file in os.listdir(dir):
+    for file in os.listdir(all_dir['frp_json']):
         if file.startswith('frp_'+date.strftime('%Y_%m_%d')):
             with open(dir+'/'+file) as data_file:
                 data = json.loads(data_file.read())
@@ -115,22 +126,20 @@ def read_frp(date):
 
 
 def read_s5p_coord(date):
-    dir = 'all_data/s5p/cropped_mask_coord'
     s5p_coord_list = []
-    for file in os.listdir(dir):
+    for file in os.listdir(all_dir['s5p_coord']):
         if file.startswith('s5p_'+ date.strftime('%Y_%m_%d')):
-           with open(dir+'/'+file) as data_file:
+           with open(all_dir['s5p_coord']+'/'+file) as data_file:
                 data = json.loads(data_file.read())
                 file = file[:-2]+'png'
                 s5p_coord_list.append({'file':file, 'coord':data})
     return s5p_coord_list
 
 def read_viirs_coord(date):
-    dir = 'all_data/viirs/png_and_json/json'
     viirs_coord_list =[]
-    for file in os.listdir(dir):
+    for file in os.listdir(all_dir['viirs_json']):
         if file.startswith('VIIRS_'+ date.strftime('%Y_%m_%d')):
-            with open(dir+'/'+file) as data_file:
+            with open(all_dir['viirs_json']+'/'+file) as data_file:
                 data = json.loads(data_file.read())
                 file = file[:-2]+'png'
                 viirs_coord_list.append({'file':file, 'coord':data})
@@ -147,58 +156,61 @@ def check_overlap_rectangles(rec1, rec2):
                     rec1['ymax'] <= rec2['ymin'] or  # bottom
                     rec1['xmin'] >= rec2['xmax'] or  # right
                     rec1['ymin'] >= rec2['ymax'])    # top
-
-def run_digitizer(s5p_data, viirs_data, firepixels):
-    viirs_png_path = 'all_data/viirs/png_and_json/png/'
-    s5p_png_path = 'all_data/s5p/png/'
-    full_path = '/Users/harshilchordia/Desktop/KCL_Research/'
-    digitizer_img_folder = 'current_digitizer_folder/'
-    Australia_Crop_coordinates = [[112.953,-43.67700000000001], [159.04500000000002,-9.177000000000007]]
-    # Australia_Crop_coordinates = [[-73.0020000000000095, -85.1460000000000150], [287.0400000000000205,81.1440000000000055]]
-    
-    
-    for s in s5p_data:
-        shutil.copyfile(full_path+s5p_png_path+s['file'], full_path+digitizer_img_folder+s['file'])
-        for v in viirs_data:
-            if check_overlap_rectangles(s['coord'], v['coord']):
-            # if (True):
-                shutil.copyfile(full_path+viirs_png_path+v['file'], full_path+digitizer_img_folder+v['file'])
-                digitizer.run_digitizer(firepixels, v['file'], s['file'], Australia_Crop_coordinates, v['coord'])
-                pause()
-
    
 
-        
-
-def run_loop_for_day(viirs_list, viirs_path, s5p_list, s5p_path, frp_list, frp_path, date, latest_time):
-    firepixels = run_loop_frp(frp_list, frp_path)
-    save_frp(firepixels, date, latest_time)
-    viirs_coordinates = []
+def viirs_day_loop(date_string, viirs_list):
     for i in viirs_list:
-        file_path = viirs_path+'/'+i['file']
-        naming_string = date.strftime('%Y_%m_%d') + '_T_'+i['time'].strftime('%H%M')
- 
-        temp = viirs.process_viirs(file_path, naming_string)
-        temp = [[temp[0][1], temp[0][0]],[temp[1][1], temp[1][0]]]
-        viirs_coordinates.append(temp)
+        file_path = all_dir['viirs_png'] + '/' + i['file']
+        naming_string = date_string + '_T_' + i['time'].strftime('%H%M')
+        viirs.process_viirs(file_path, naming_string)
 
-    # s5p data processing
+def s5p_day_loop(date_string, s5p_list):
     for i in s5p_list:
-        file_path = s5p_path+'/'+i['file']
-        naming_string = date.strftime('%Y_%m_%d') + '_T_'+i['time'].strftime('%H%M')
+        file_path = all_dir['s5p_raw']+'/'+i['file']
+        naming_string = date_string + '_T_' + i['time'].strftime('%H%M')
         read_s5p.netcdf_to_png(file_path, naming_string)
 
-    print('\n\n\n\n All conversion done :) \n\n\n\n\n')
+
+
+def run_loop_for_day(frp_list, frp_path, viirs_list, s5p_list, date, latest_time):
+    date_string = date.strftime('%Y_%m_%d')
+
+    firepixels = fetch_day_frp(frp_list, frp_path)
+    save_frp(firepixels, date, latest_time)
+    print('\n\n Firepixels Saved :) \n\n')
+
+    viirs_day_loop(date_string, viirs_list)
+    print('\n\n VIIRS saved :) \n\n')
+
+
+    s5p_day_loop(date_string, s5p_list)
+    print('\n\n S5P CO saved :) \n\n')
+
+   
+    print('\n\n All conversion done :) \n\n')
+
+def run_digitizer(s5p_data, viirs_data, firepixels):        
+    for s in s5p_data:
+        shutil.copyfile(full_path+'/'+all_dir['s5p_png']+'/'+s['file'], full_path+'/'+all_dir['digitise_img']+'/'+s['file'])
+        for v in viirs_data:
+            if check_overlap_rectangles(s['coord'], v['coord']):
+                shutil.copyfile(full_path+'/'+all_dir['viirs_png']+'/'+v['file'], full_path+'/'+all_dir['digitise_img']+'/'+v['file'])
+                digitizer.run_digitizer(firepixels, v['file'], s['file'], Australia_Shape_Coord, v['coord'])
+                pause()
 
 
 if __name__ == '__main__':
     createdirs()
     date = convertDate('20-12-2019') #DD-MM-YYYY
-    viirs_list, viirs_path = fetch_VIIRS(date)
-    s5p_list, s5p_path = fetch_S5P(date)
+    
+    #fetch raw data
+    viirs_list = fetch_VIIRS(date)
+    s5p_list = fetch_S5P(date)
     latest_time = find_latest_time(viirs_list, s5p_list)
     frp_list, frp_path = fetch_FRP(date, latest_time)
-    firepixels = run_loop_for_day(viirs_list, viirs_path, s5p_list, s5p_path, frp_list, frp_path, date, latest_time)
+
+    #run loop and save files
+    run_loop_for_day(frp_list, frp_path,  viirs_list, s5p_list, date, latest_time)
   
     #run digitizer after all processing
     s5_data = read_s5p_coord(date)

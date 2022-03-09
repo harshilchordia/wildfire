@@ -2,8 +2,7 @@ import h5py
 import numpy as np
 import pandas as pd
 import os
-import bz2
-from datetime import datetime, timedelta
+
 pd.set_option('display.max_columns', 500)
 
 
@@ -33,7 +32,7 @@ def extract_data_h5(file_path):
 
     else:
         # print("ERROR when trying to open file, this file does not exist:", msg_datetime.strftime(DataDir + "%Y/HDF5_LSASAF_MSG-IODC_FRP-PIXEL-ListProduct_IODC-Disk_%Y%m%d%H%M.bz2")
-        print("file not found")
+        print("file not found: " + file_path)
 
     msg_df = pd.DataFrame()
     return msg_df
