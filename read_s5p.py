@@ -59,29 +59,42 @@ def netcdf_to_png(file, naming_string):
     shape_file = 'new_aus_shape.shp'
     # adfasdf
     
-    crop_shape = gdal.Warp(saving_tiff+'cropped_tiff/s5p_cropped_'+naming_string+'.tiff', warped_tif, cutlineDSName=shape_file, cropToCutline=True, srcNodata=9.96921e+36, dstNodata=9.96921e+36)
+    crop_shape = gdal.Warp(saving_tiff+'cropped_tiff/s5p_cropped_4326'+naming_string+'.tiff', warped_tif, cutlineDSName=shape_file, cropToCutline=True)
     # crop_shape = gdal.Translate(saving_tiff+'cropped_tiff/s5p_cropped_'+naming_string+'.tiff', warped_tif, projWinSRS="EPSG:4326",projWin=crop_coordinates)
 
     # crop_tif = gdal.Translate('extrafiles/croppjned.tiff', warped_tif,format='GTiff', projWin=crop_coordinates)
+
+    changed_proj = gdal.Warp('all_data/s5p/png/s5p_3857'+naming_string+'.tiff', crop_shape, srcSRS='EPSG:4326', dstSRS='EPSG:3857', dstNodata=0)
+
+
     png_image_dir = 'all_data/s5p/png/s5p_'+naming_string+'.png'
 
-    # geoTransform = crop_shape.GetGeoTransform()
-    # minx = geoTransform[0]
-    # maxy = geoTransform[3]
-    # maxx = minx + geoTransform[1] * crop_shape.RasterXSize
-    # miny = maxy + geoTransform[5] * crop_shape.RasterYSize
-    # print ([minx, miny, maxx, maxy])
-
-
-
-    # myarray = np.array(crop_shape.GetRasterBand(1).ReadAsArray())
-    # ndv = np.array(crop_shape.GetRasterBand(1).GetNoDataValue())
    
 
-    # print(myarray)
 
-    # formatted = (myarray * 255 / np.max(myarray)).astype('uint8')
 
+    myarray = np.array(changed_proj.GetRasterBand(1).ReadAsArray())
+    ndv = np.array(changed_proj.GetRasterBand(1).GetNoDataValue())
+   
+
+    myarray = (myarray * 255 / np.max(myarray)).astype('uint8')
+    myarray[myarray==ndv] = 255
+
+
+    img = Image.fromarray(myarray)
+    img = img.convert("RGBA")
+    datas = img.getdata()
+
+    newData = []
+    for item in datas:
+        if item[0] == 255 and item[1] == 255 and item[2] == 255:
+            newData.append((255, 255, 255, 0))
+        else:
+            newData.append(item)
+
+    img.putdata(newData)
+    img.save(png_image_dir, "PNG")
+ 
 
     # formatted[formatted==0.0] = 255
 
@@ -91,14 +104,20 @@ def netcdf_to_png(file, naming_string):
    
 
 
-    # imageio.imwrite(png_image_dir, img)
-    changed_proj = gdal.Translate('all_data/s5p/png/s5p_'+naming_string+'.tiff', crop_shape, outputSRS='EPSG:3857')
+    # imageio.imwrite(png_image_dir, myarray)
+
+    geoTransform = crop_shape.GetGeoTransform()
+    minx = geoTransform[0]
+    maxy = geoTransform[3]
+    maxx = minx + geoTransform[1] * crop_shape.RasterXSize
+    miny = maxy + geoTransform[5] * crop_shape.RasterYSize
+    print ([minx, miny, maxx, maxy])
 
 
-    pngimage = gdal.Translate(png_image_dir, changed_proj, format='PNG')
+    # pngimage = gdal.Translate(png_image_dir, changed_proj, format='PNG')
 
-    lons, lats = get_tif_lat_lons(crop_shape)
-    find_bounds(png_image_dir, lats, lons, naming_string)
+    lons, lats = get_tif_lat_lons(changed_proj)
+    find_bounds(img, lats, lons, naming_string)
     
 
     
@@ -115,7 +134,7 @@ def netcdf_to_png(file, naming_string):
 
 
 def find_bounds(entire_image,lats, lons, naming_string):
-    img = Image.open(entire_image).convert('L') 
+    img = entire_image.convert('L') 
 
     np_img = np.array(img)
     np_img = ~np_img  # invert B&W

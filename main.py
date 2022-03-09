@@ -9,6 +9,7 @@ import frp_himawari
 import read_s5p
 import viirs
 import digitizer
+import overlapp
 
 def pause():
     programPause = input("Press the <ENTER> key to continue...")
@@ -152,6 +153,7 @@ def run_digitizer(s5p_data, viirs_data, firepixels):
         shutil.copyfile(full_path+s5p_png_path+s['file'], full_path+digitizer_img_folder+s['file'])
         for v in viirs_data:
             if check_overlap_rectangles(s['coord'], v['coord']):
+            # if (True):
                 shutil.copyfile(full_path+viirs_png_path+v['file'], full_path+digitizer_img_folder+v['file'])
                 digitizer.run_digitizer(firepixels, v['file'], s['file'], Australia_Crop_coordinates, v['coord'])
                 pause()
@@ -161,17 +163,17 @@ def run_digitizer(s5p_data, viirs_data, firepixels):
         
 
 def run_loop_for_day(viirs_list, viirs_path, s5p_list, s5p_path, frp_list, frp_path, date, latest_time):
-    firepixels = run_loop_frp(frp_list, frp_path)
-    save_frp(firepixels, date, latest_time)
-    viirs_coordinates = []
-    for i in viirs_list:
-        file_path = viirs_path+"/"+i['file']
-        naming_string = date.strftime("%Y_%m_%d") + "_T_"+i['time'].strftime("%H%M")
+    # firepixels = run_loop_frp(frp_list, frp_path)
+    # save_frp(firepixels, date, latest_time)
+    # viirs_coordinates = []
+    # for i in viirs_list:
+    #     file_path = viirs_path+"/"+i['file']
+    #     naming_string = date.strftime("%Y_%m_%d") + "_T_"+i['time'].strftime("%H%M")
  
-        temp = viirs.process_viirs(file_path, naming_string)
-        temp = [[temp[0][1], temp[0][0]],[temp[1][1], temp[1][0]]]
-        viirs_coordinates.append(temp)
-        overlapp
+    #     temp = viirs.process_viirs(file_path, naming_string)
+    #     temp = [[temp[0][1], temp[0][0]],[temp[1][1], temp[1][0]]]
+    #     viirs_coordinates.append(temp)
+
     # s5p data processing
     for i in s5p_list:
         file_path = s5p_path+"/"+i['file']
@@ -179,7 +181,6 @@ def run_loop_for_day(viirs_list, viirs_path, s5p_list, s5p_path, frp_list, frp_p
         read_s5p.netcdf_to_png(file_path, naming_string)
 
     print('\n\n\n\n All conversion to png done :) \n\n\n\n\n')
-
 
 
 if __name__ == '__main__':
