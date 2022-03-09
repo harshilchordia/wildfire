@@ -59,7 +59,7 @@ def netcdf_to_png(file, naming_string):
     shape_file = 'new_aus_shape.shp'
     # adfasdf
     
-    crop_shape = gdal.Warp(saving_tiff+'cropped_tiff/s5p_cropped_4326'+naming_string+'.tiff', warped_tif, cutlineDSName=shape_file, cropToCutline=True)
+    crop_shape = gdal.Warp(saving_tiff+'cropped_tiff/s5p_cropped_4326_'+naming_string+'.tiff', warped_tif, cutlineDSName=shape_file, cropToCutline=True)
     # crop_shape = gdal.Translate(saving_tiff+'cropped_tiff/s5p_cropped_'+naming_string+'.tiff', warped_tif, projWinSRS="EPSG:4326",projWin=crop_coordinates)
 
     # crop_tif = gdal.Translate('extrafiles/croppjned.tiff', warped_tif,format='GTiff', projWin=crop_coordinates)
@@ -116,8 +116,12 @@ def netcdf_to_png(file, naming_string):
 
     # pngimage = gdal.Translate(png_image_dir, changed_proj, format='PNG')
 
-    lons, lats = get_tif_lat_lons(changed_proj)
-    find_bounds(img, lats, lons, naming_string)
+    lons, lats = get_tif_lat_lons(crop_shape)
+    array_4326 = np.array(crop_shape.GetRasterBand(1).ReadAsArray())
+    img_4326 = Image.fromarray(array_4326)
+
+    
+    find_bounds(img_4326, lats, lons, naming_string)
     
 
     

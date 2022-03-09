@@ -1,6 +1,3 @@
-directory = "/Users/harshilchordia/Desktop/KCL_Research/all_data"
-
-
 import datetime
 import json
 import os
@@ -9,10 +6,28 @@ import frp_himawari
 import read_s5p
 import viirs
 import digitizer
-import overlapp
+
+all_dirs = {    'viirs_raw':        'all_data/viirs/raw_data',
+                'viirs_png':        'all_data/viirs/png',
+                'viirs_json':       'all_data/viirs/json',
+                's5p_png':          'all_data/s5p/png',
+                's5p_coord':        'all_data/s5p/dataMask_coord',
+                's5p_raw':          'all_data/s5p/raw_data',
+                's5p_crop_tif':     'all_data/s5p/tiff/crop',
+                's5p_full_tif':     'all_data/s5p/tiff/full',
+                'himawari_raw':     'all_data/Himawari-8',
+                'himawari_json':    'all_data/Himawari-8/json_dumps' }
+
+def createdirs():
+    
+    for dir in all_dirs.values():
+        print(dir)
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+
 
 def pause():
-    programPause = input("Press the <ENTER> key to continue...")
+    programPause = input('Press the <ENTER> key to continue...')
 
 def convertDate(date_entry):
     day, month, year = map(int, date_entry.split('-'))
@@ -20,31 +35,27 @@ def convertDate(date_entry):
     return date
 
 def fetch_VIIRS(date):
-    current_directory = directory + "/viirs/raw_files"
     viirs_list = []
     day_number = date.strftime('%-j')
-
-    for file in os.listdir(current_directory):
-        filename_start = "NPP_VMAES_L1.A"+str(date.year)+str(day_number)
+    for file in os.listdir(all_dirs['viirs_raw']):
+        filename_start = 'NPP_VMAES_L1.A'+str(date.year)+str(day_number)
         if file.startswith(filename_start):
             t = file[22:26]
             time = datetime.datetime.strptime(t,'%H%M').time()
             viirs_list.append({'file':file, 'time':time})
    
-    return viirs_list, current_directory
+    return viirs_list
 
 def fetch_S5P(date):
-    current_directory = directory + "/s5p/raw_data"
     s5p_list = []
-
-    for file in os.listdir(current_directory):
-        filename_start = "S5P_OFFL_L2__CO_____"+str(date.year)+str(date.strftime('%m'))+str(date.strftime('%d'))
+    for file in os.listdir(all_dirs['s5p_raw']):
+        filename_start = 'S5P_OFFL_L2__CO_____'+str(date.year)+str(date.strftime('%m'))+str(date.strftime('%d'))
         if file.startswith(filename_start):
             t = file[29:33]
             time = datetime.datetime.strptime(t,'%H%M').time()
             s5p_list.append({'file':file, 'time':time})
     
-    return s5p_list, current_directory
+    return s5p_list
 
 
 def find_latest_time(viirs_list, s5p_list):
@@ -60,48 +71,45 @@ def find_latest_time(viirs_list, s5p_list):
 
 
 def fetch_FRP(date, latest_time):
-    current_directory = directory + "/Himawari-8/" + str(date.year) + "/" + str(date.strftime('%m')) + "/" + str(date.strftime('%d'))
+    himawari_dir = all_dirs['himawari_raw'] + '/Himawari-8/' + str(date.year) + '/' + str(date.strftime('%m')) + '/' + str(date.strftime('%d'))
     frp_list = []
-    for file in os.listdir(current_directory):
-        filename_start = "CAMS__HMWR_FRP-PIXEL-ListProduct_HMWR-FD_"+str(date.year)+str(date.strftime('%m'))+str(date.strftime('%d'))
+    for file in os.listdir(himawari_dir):
+        filename_start = 'CAMS__HMWR_FRP-PIXEL-ListProduct_HMWR-FD_'+str(date.year)+str(date.strftime('%m'))+str(date.strftime('%d'))
         if file.startswith(filename_start):
             t = file[-7:-3]
             time = datetime.datetime.strptime(t,'%H%M').time()
             if time<=latest_time:
                 frp_list.append({'file':file, 'time':time})
     
-    return frp_list, current_directory
+    return frp_list, himawari_dir
             
 def run_loop_frp(frp_list,frp_path):
     firepixels = []
     for i in frp_list:
-        himawari_data = frp_himawari.extract_data_h5(frp_path+"/"+i['file'])
-        lon = himawari_data["LONGITUDE"]
-        lat = himawari_data["LATITUDE"]
+        himawari_data = frp_himawari.extract_data_h5(frp_path+'/'+i['file'])
+        lon = himawari_data['LONGITUDE']
+        lat = himawari_data['LATITUDE']
 
         for x,y in zip(lon.items(), lat.items()):
             lon_point=x[1]
             lat_point=y[1]
-            firepixels.append({"type": "Feature", "geometry": {"type": "Point", "coordinates": [lon_point, lat_point] }})
+            firepixels.append({'type': 'Feature', 'geometry': {'type': 'Point', 'coordinates': [lon_point, lat_point] }})
     return firepixels
 
 def save_frp(firepixels, date, latest_time):
-    if not os.path.exists('all_data/Himawari-8/json_dumps'):
-        os.makedirs('all_data/Himawari-8/json_dumps')
 
-    naming_string = date.strftime("%Y_%m_%d")+'_till_'+ latest_time.strftime("%H%M")
-    bboxfile = "all_data/Himawari-8/json_dumps/frp_" + naming_string + ".js"
+    naming_string = date.strftime('%Y_%m_%d')+'_till_'+ latest_time.strftime('%H%M')
+    bboxfile = all_dirs['himawari_json']+'/frp_' + naming_string + '.js'
 
     with open(bboxfile, 'w') as file:
-        # file.write('{};'.format(json.dumps(firepixels)))
         json.dump(firepixels, file)
 
 
 def read_frp(date):
     dir= 'all_data/Himawari-8/json_dumps'
     for file in os.listdir(dir):
-        if file.startswith('frp_'+date.strftime("%Y_%m_%d")):
-            with open(dir+"/"+file) as data_file:
+        if file.startswith('frp_'+date.strftime('%Y_%m_%d')):
+            with open(dir+'/'+file) as data_file:
                 data = json.loads(data_file.read())
                 return data
 
@@ -110,8 +118,8 @@ def read_s5p_coord(date):
     dir = 'all_data/s5p/cropped_mask_coord'
     s5p_coord_list = []
     for file in os.listdir(dir):
-        if file.startswith('s5p_'+ date.strftime("%Y_%m_%d")):
-           with open(dir+"/"+file) as data_file:
+        if file.startswith('s5p_'+ date.strftime('%Y_%m_%d')):
+           with open(dir+'/'+file) as data_file:
                 data = json.loads(data_file.read())
                 file = file[:-2]+'png'
                 s5p_coord_list.append({'file':file, 'coord':data})
@@ -121,8 +129,8 @@ def read_viirs_coord(date):
     dir = 'all_data/viirs/png_and_json/json'
     viirs_coord_list =[]
     for file in os.listdir(dir):
-        if file.startswith('VIIRS_'+ date.strftime("%Y_%m_%d")):
-            with open(dir+"/"+file) as data_file:
+        if file.startswith('VIIRS_'+ date.strftime('%Y_%m_%d')):
+            with open(dir+'/'+file) as data_file:
                 data = json.loads(data_file.read())
                 file = file[:-2]+'png'
                 viirs_coord_list.append({'file':file, 'coord':data})
@@ -163,29 +171,29 @@ def run_digitizer(s5p_data, viirs_data, firepixels):
         
 
 def run_loop_for_day(viirs_list, viirs_path, s5p_list, s5p_path, frp_list, frp_path, date, latest_time):
-    # firepixels = run_loop_frp(frp_list, frp_path)
-    # save_frp(firepixels, date, latest_time)
-    # viirs_coordinates = []
-    # for i in viirs_list:
-    #     file_path = viirs_path+"/"+i['file']
-    #     naming_string = date.strftime("%Y_%m_%d") + "_T_"+i['time'].strftime("%H%M")
+    firepixels = run_loop_frp(frp_list, frp_path)
+    save_frp(firepixels, date, latest_time)
+    viirs_coordinates = []
+    for i in viirs_list:
+        file_path = viirs_path+'/'+i['file']
+        naming_string = date.strftime('%Y_%m_%d') + '_T_'+i['time'].strftime('%H%M')
  
-    #     temp = viirs.process_viirs(file_path, naming_string)
-    #     temp = [[temp[0][1], temp[0][0]],[temp[1][1], temp[1][0]]]
-    #     viirs_coordinates.append(temp)
+        temp = viirs.process_viirs(file_path, naming_string)
+        temp = [[temp[0][1], temp[0][0]],[temp[1][1], temp[1][0]]]
+        viirs_coordinates.append(temp)
 
-    overlapp.merge_viirs_tiff(directory+'/viirs/tiffs', date)
     # s5p data processing
     for i in s5p_list:
-        file_path = s5p_path+"/"+i['file']
-        naming_string = date.strftime("%Y_%m_%d") + "_T_"+i['time'].strftime("%H%M")
+        file_path = s5p_path+'/'+i['file']
+        naming_string = date.strftime('%Y_%m_%d') + '_T_'+i['time'].strftime('%H%M')
         read_s5p.netcdf_to_png(file_path, naming_string)
 
-    print('\n\n\n\n All conversion to png done :) \n\n\n\n\n')
+    print('\n\n\n\n All conversion done :) \n\n\n\n\n')
 
 
 if __name__ == '__main__':
-    date = convertDate("01-12-2019") #DD-MM-YYYY
+    createdirs()
+    date = convertDate('20-12-2019') #DD-MM-YYYY
     viirs_list, viirs_path = fetch_VIIRS(date)
     s5p_list, s5p_path = fetch_S5P(date)
     latest_time = find_latest_time(viirs_list, s5p_list)

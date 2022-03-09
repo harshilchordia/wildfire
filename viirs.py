@@ -97,35 +97,9 @@ def resample_swath_to_rgba(proj4, lons, lats, data, res, method='nearest'):
     crs = area_def.to_cartopy_crs()
     return (img, crs, leaflet_lonlat_bbox)
 
-#TIFF CODE
-def make_tiff(tiff_file_name, img, coordinates):
-    xmin = coordinates[0][0]
-    ymin = coordinates[0][1]
-    xmax = coordinates[1][0]
-    ymax = coordinates[1][1]
-  
-    nrows,ncols = np.shape(img[:,:,3]) 
-    xres = (xmax-xmin)/float(ncols)
-    yres = (ymax-ymin)/float(nrows)
-    geotransform=(xmin,xres,0,ymax,0, -yres)
-
-    output_raster = gdal.GetDriverByName('GTiff').Create(tiff_file_name,ncols, nrows, 3 ,gdal.GDT_Float32)  # Open the file
-    output_raster.SetGeoTransform(geotransform)  # Specify its coordinates
-    srs = osr.SpatialReference()                 # Establish its coordinate encoding
-    srs.ImportFromEPSG(3857)                     # This one specifies WGS84 lat long.
-                                                 # Anyone know how to specify the
-                                                 # IAU2000:49900 Mars encoding?
-    output_raster.SetProjection( srs.ExportToWkt() )   # Exports the coordinate system
-                                                       # to the file
-    # Writes my array to the raster
-    output_raster.GetRasterBand(1).WriteArray(img[:,:,0])
-    output_raster.GetRasterBand(2).WriteArray(img[:,:,1])
-    output_raster.GetRasterBand(3).WriteArray(img[:,:,2])
-    output_raster.GetRasterBand(1).SetNoDataValue(-9999)
-    output_raster.FlushCache()
 
 
-def save2png(pngfile, img, viirs_directory, naming_string, lonlat):
+def save2png(pngfile, img):
 
     if img.ndim == 2:
         pass
@@ -134,11 +108,6 @@ def save2png(pngfile, img, viirs_directory, naming_string, lonlat):
         pass
         # print(np.nanmax(img[:,:,:-1]), np.nanmin(img[:,:,:-1]), np.isnan(img[:,:,:-1]).any())
     # scipy.misc.imsave(pngfile, img)
-    # img = np.flip(img, 1)
-    saving_string = viirs_directory+"/tiffs/full/VIIRS_"+naming_string+'.tiff'
-    make_tiff(saving_string, img,lonlat)
-
- 
     imageio.imwrite(pngfile, img)
 
 
@@ -151,10 +120,9 @@ def main(naming_string, f_viirs=None, prj=None, res=300):
     rgba, crs, leaflet_lonlat_bbox = resample_swath_to_rgba(prj, lons, lats, data, res, method='bilinear')
     pngfile = viirs_directory+"/png_and_json/png/VIIRS_" + naming_string + ".png"
     
-    save2png(pngfile, rgba, viirs_directory, naming_string, leaflet_lonlat_bbox)
+    save2png(pngfile, rgba)
     bboxfile = viirs_directory+"/png_and_json/json/VIIRS_" + naming_string + ".js"
 
-    # overlapp.georeference_png(pngfile, leaflet_lonlat_bbox, naming_string, viirs_directory)
     with open(bboxfile, 'w') as file:
         xmin = leaflet_lonlat_bbox[0][0]
         ymin = leaflet_lonlat_bbox[0][1]
