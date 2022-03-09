@@ -174,6 +174,7 @@ def run_loop_for_day(viirs_list, viirs_path, s5p_list, s5p_path, frp_list, frp_p
     #     temp = [[temp[0][1], temp[0][0]],[temp[1][1], temp[1][0]]]
     #     viirs_coordinates.append(temp)
 
+    overlapp.merge_viirs_tiff(directory+'/viirs/tiffs', date)
     # s5p data processing
     for i in s5p_list:
         file_path = s5p_path+"/"+i['file']
@@ -184,7 +185,7 @@ def run_loop_for_day(viirs_list, viirs_path, s5p_list, s5p_path, frp_list, frp_p
 
 
 if __name__ == '__main__':
-    date = convertDate("20-12-2019") #DD-MM-YYYY
+    date = convertDate("01-12-2019") #DD-MM-YYYY
     viirs_list, viirs_path = fetch_VIIRS(date)
     s5p_list, s5p_path = fetch_S5P(date)
     latest_time = find_latest_time(viirs_list, s5p_list)

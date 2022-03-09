@@ -2,8 +2,11 @@
 import os
 from random import randint, random
 import subprocess
+
+from numpy import full
 from osgeo import gdal
 import json
+import h_viirs
 
 
 
@@ -14,7 +17,7 @@ import json
 
 
 def georeference_png(pngfile, coordinates, naming_string, viirs_directory):
-    saving_string = viirs_directory+"/georeferenced_tiffs/VIIRS_"+naming_string+'.tiff'
+    saving_string = viirs_directory+"/tiffs/full/VIIRS_"+naming_string+'.tiff'
     # print(coordinates)
     # for file in os.listdir(directory+'/png'):
     #     js_data = ""
@@ -36,21 +39,23 @@ def georeference_png(pngfile, coordinates, naming_string, viirs_directory):
 
         # if file.startswith(filename_start):
         #     print(file[:-4])
-    x1 = coordinates[0][1]
-    y1 = coordinates[0][0]
-    x2 = coordinates[1][1]
-    y2 = coordinates[1][0]
+    x1 = coordinates[1][0]
+    y1 = coordinates[1][1]
+    x2 = coordinates[0][0]
+    y2 = coordinates[0][1]
     geo_tiff = gdal.Translate(saving_string, pngfile, format='GTiff', noData="255",outputSRS="EPSG:3857", outputBounds=[x1,y1,x2,y2])
 
 # georeference_png()
 def merge_viirs_tiff(current_directory, date):
-    shape_file = 'new_aus_shape.shp'
+    full_tiff_dir = current_directory + '/full'
+    print(full_tiff_dir)
+    shape_file = 'shapingfile.shp'
     date_format = str(date.year)+'_'+str(date.strftime('%m'))+'_'+str(date.strftime('%d'))
     tiff_list = []
-    for file in os.listdir(current_directory):
+    for file in os.listdir(full_tiff_dir):
         filename_start = "VIIRS_"+ date_format
         if file.startswith(filename_start) and file.endswith('.tiff'):
-            tiff_list.append(current_directory+"/"+file)
+            tiff_list.append(full_tiff_dir+"/"+file)
 
 
     merged_save_dir = current_directory+"/Merged_VIIRS_"+date_format+'.tiff'
@@ -60,7 +65,7 @@ def merge_viirs_tiff(current_directory, date):
 
     cmd = "gdal_merge.py -ot Float32 -o "+merged_save_dir+" -n 0.0 -a_nodata 255.0 -of GTiff"
     subprocess.call(cmd.split()+tiff_list)
-    crop_shape = gdal.Warp(cropped_save_dir, merged_save_dir, cutlineDSName=shape_file, cropToCutline=True)
+    crop_shape = gdal.Warp(cropped_save_dir, merged_save_dir, cutlineDSName=shape_file, cropToCutline=True, srcSRS='EPSG:3857', dstSRS='EPSG:3857')
     pngimage = gdal.Translate('all_data/viirs/final_png/VIIRS_png_'+date_format+'.png', crop_shape, format='PNG', scaleParams=[[]])
 
 
