@@ -6,8 +6,8 @@ import os
 import numpy as np
 from skimage.morphology import convex_hull_image
 
-from main import all_dir
-from main import shape_file
+from dir_config import all_dir, shape_file
+
 
 
 def get_tif_lat_lons(ds):
@@ -77,6 +77,7 @@ def find_bounds(entire_image,lats, lons, naming_string):
     xmin,ymin,xmax,ymax = [lons_mask.min(), lats_mask.min(), lons_mask.max(), lats_mask.max()]
 
     bboxfile = all_dir['s5p_coord']+'/s5p_' + naming_string + ".js"
+    print(bboxfile)
 
     with open(bboxfile, 'w') as file:
         json.dump({'xmin':xmin,'ymin':ymin,'xmax':xmax, 'ymax':ymax}, file)

@@ -8,25 +8,7 @@ import frp_himawari
 import read_s5p
 import viirs
 import digitizer
-
-full_path = '/Users/harshilchordia/Desktop/KCL_Research'
-
-all_dir = {     'viirs_raw':        'all_data/viirs/raw_data',
-                'viirs_png':        'all_data/viirs/png',
-                'viirs_json':       'all_data/viirs/json',
-                's5p_png':          'all_data/s5p/png',
-                's5p_coord':        'all_data/s5p/dataMask_coord',
-                's5p_raw':          'all_data/s5p/raw_data',
-                's5p_crop_tif':     'all_data/s5p/tiff/crop',
-                's5p_full_tif':     'all_data/s5p/tiff/full',
-                'himawari_raw':     'all_data/Himawari-8',
-                'frp_json':         'all_data/Himawari-8/json_dumps', 
-                'digitise_img':     'current_digitizer_folder'  
-            }
-
-shape_file = 'shapingfile.shp'
-Australia_Shape_Coord = [[112.953,-43.67700000000001], [159.04500000000002,-9.177000000000007]]
-
+from dir_config import full_path, all_dir, Australia_Shape_Coord
 
 
 
@@ -120,7 +102,7 @@ def save_frp(firepixels, date, latest_time):
 def read_frp(date):
     for file in os.listdir(all_dir['frp_json']):
         if file.startswith('frp_'+date.strftime('%Y_%m_%d')):
-            with open(dir+'/'+file) as data_file:
+            with open(all_dir['frp_json']+'/'+file) as data_file:
                 data = json.loads(data_file.read())
                 return data
 
@@ -160,7 +142,7 @@ def check_overlap_rectangles(rec1, rec2):
 
 def viirs_day_loop(date_string, viirs_list):
     for i in viirs_list:
-        file_path = all_dir['viirs_png'] + '/' + i['file']
+        file_path = all_dir['viirs_raw'] + '/' + i['file']
         naming_string = date_string + '_T_' + i['time'].strftime('%H%M')
         viirs.process_viirs(file_path, naming_string)
 
@@ -191,12 +173,17 @@ def run_loop_for_day(frp_list, frp_path, viirs_list, s5p_list, date, latest_time
 
 def run_digitizer(s5p_data, viirs_data, firepixels):        
     for s in s5p_data:
+        run = False
         shutil.copyfile(full_path+'/'+all_dir['s5p_png']+'/'+s['file'], full_path+'/'+all_dir['digitise_img']+'/'+s['file'])
         for v in viirs_data:
             if check_overlap_rectangles(s['coord'], v['coord']):
+                run = True
                 shutil.copyfile(full_path+'/'+all_dir['viirs_png']+'/'+v['file'], full_path+'/'+all_dir['digitise_img']+'/'+v['file'])
                 digitizer.run_digitizer(firepixels, v['file'], s['file'], Australia_Shape_Coord, v['coord'])
                 pause()
+        if run==False:
+            digitizer.run_digitizer(firepixels, '', s['file'], Australia_Shape_Coord, s['coord'])
+            pause()
 
 
 if __name__ == '__main__':

@@ -6,9 +6,9 @@ import pyresample as pr
 import pyproj
 import json
 import imageio
-import overlapp
-from osgeo import gdal
-from osgeo import osr
+
+from dir_config import all_dir
+
 
 lin = np.array([0, 30, 60, 120, 190, 255]) / 255.0
 nonlin = np.array([0, 110, 160, 210, 240, 255]) / 255.0
@@ -31,11 +31,9 @@ def read_viirs_swath_for_rgba(f):
     latlon = []
     mask = []
     for i, b in enumerate(['Latitude', 'Longitude']):
-        # print('read {}'.format(b))
         sds_obj = file.select(b)
         data = sds_obj.get()
         mask.append(data <= -999)
-        # print('{} error: {}'.format(b, np.sum(mask[i])))
         latlon.append(data)
     latitude, longitude = tuple(latlon)
     latlon_mask = np.any(mask, axis=0)
@@ -43,14 +41,12 @@ def read_viirs_swath_for_rgba(f):
     mask = []
     for i, b in enumerate([5, 4, 3]):
         band = 'Reflectance_M{}'.format(b)
-        # print('read {}'.format(band))
         sds_obj = file.select(band)
         data = sds_obj.get()
         mask.append(data >= 65527)
         data = (data - sds_obj.Offset) * sds_obj.Scale
         data = np.clip(data, 0., 0.6)
         data = exposure.equalize_adapthist(scale(data), clip_limit=0.05)
-        # print('data type after equalize: ', data.dtype)
         rgb.append(data)
     file.end()
     rgb = np.stack(rgb, axis=2)
@@ -71,7 +67,6 @@ def resample_swath_to_rgba(proj4, lons, lats, data, res, method='nearest'):
     extent_proj = [x_ll, y_ll, x_ur, y_ur]
     _lon, _lat = prj([x_ll, x_ur], [y_ll, y_ur], inverse=True)
     leaflet_lonlat_bbox = [ [ _lon[0], _lat[0] ], [ _lon[1], _lat[1] ] ]
-    # print('leaflet latLngBounds: [[{}, {}], [{}, {}]]'.format(_lat[0], _lon[0], _lat[1], _lon[1]))
     ratio = (extent_proj[2]-extent_proj[0])/(extent_proj[3]-extent_proj[1])
     res = 3000
     if ratio > 1:
@@ -83,7 +78,6 @@ def resample_swath_to_rgba(proj4, lons, lats, data, res, method='nearest'):
       x_size = int(y_size*ratio)
     area_def = pr.geometry.AreaDefinition(proj4['proj'], proj4['proj'], proj4['proj'],
                                           proj4, x_size, y_size, extent_proj )
-    # print(area_def)
     result = pr.kd_tree.resample_nearest(swath_def, data, area_def,
                                             radius_of_influence=20000,
                                             fill_value=None)
@@ -98,30 +92,19 @@ def resample_swath_to_rgba(proj4, lons, lats, data, res, method='nearest'):
     return (img, crs, leaflet_lonlat_bbox)
 
 
-
 def save2png(pngfile, img):
-
     if img.ndim == 2:
         pass
-        # print(np.nanmax(img), np.nanmin(img), np.isnan(img).any())
     elif  img.ndim == 3:
         pass
-        # print(np.nanmax(img[:,:,:-1]), np.nanmin(img[:,:,:-1]), np.isnan(img[:,:,:-1]).any())
-    # scipy.misc.imsave(pngfile, img)
     imageio.imwrite(pngfile, img)
 
-
-
-
-
 def main(naming_string, f_viirs=None, prj=None, res=300):
-    viirs_directory = 'all_data/viirs'
     lons, lats, data = read_viirs_swath_for_rgba(f_viirs)
     rgba, crs, leaflet_lonlat_bbox = resample_swath_to_rgba(prj, lons, lats, data, res, method='bilinear')
-    pngfile = viirs_directory+"/png_and_json/png/VIIRS_" + naming_string + ".png"
-    
+    pngfile = all_dir['viirs_png']+"/VIIRS_" + naming_string + ".png"
     save2png(pngfile, rgba)
-    bboxfile = viirs_directory+"/png_and_json/json/VIIRS_" + naming_string + ".js"
+    bboxfile = all_dir['viirs_json']+"/VIIRS_" + naming_string + ".js"
 
     with open(bboxfile, 'w') as file:
         xmin = leaflet_lonlat_bbox[0][0]
@@ -130,10 +113,7 @@ def main(naming_string, f_viirs=None, prj=None, res=300):
         ymax = leaflet_lonlat_bbox[1][1]
         json.dump({'xmin':xmin,'ymin':ymin,'xmax':xmax, 'ymax':ymax}, file)
         
-        # file.write('{viirs_bbox_lonlat = {};'.format(json.dumps(leaflet_lonlat_bbox)))
-
     return leaflet_lonlat_bbox
-
 
 
 def process_viirs(file, naming_string):
@@ -141,17 +121,3 @@ def process_viirs(file, naming_string):
     coordinates_lonlat = main(naming_string, f_viirs=file, prj=prj, res=3000)
     return coordinates_lonlat
     
-
-
-# if __name__ == " __main__":
-# #     # file = '/Users/harshilchordia/Downloads/sentinel5p/VIIRS/NPP_VMAES_L1.A2019342.0224.001.2019342115422.hdf'
-# #     file = '/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/NPP_VMAES_L1.A2019335.0442.001.2019335104525.hdf'
-    
-# #     # file = '/Users/harshilchordia/Downloads/sentinel5p/VIIRS/test.netcdf'
-# #     # file = '/Users/harshilchordia/Downloads/NP.hdf.dap'
-# #     # f='NPP_VMAES_L1.A2018276.1230.001.2018276233743.hdf'
-# #     f = '/Users/harshilchordia/Desktop/KCL Research/all_data/viirs/raw_files/NPP_VMAES_L1.A2019335.0442.001.2019335104525.hdf'
-
-# # #     f = file 
-# #     prj = proj4param['merc']
-#     # main(f_viirs=f, prj=prj, res=3000)
