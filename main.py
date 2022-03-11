@@ -188,16 +188,16 @@ def run_digitizer(s5p_data, viirs_data, firepixels):
 
 if __name__ == '__main__':
     createdirs()
-    date = convertDate('20-12-2019') #DD-MM-YYYY
+    date = convertDate('01-12-2019') #DD-MM-YYYY
     
-    #fetch raw data
-    viirs_list = fetch_VIIRS(date)
-    s5p_list = fetch_S5P(date)
-    latest_time = find_latest_time(viirs_list, s5p_list)
-    frp_list, frp_path = fetch_FRP(date, latest_time)
+    # #fetch raw data
+    # viirs_list = fetch_VIIRS(date)
+    # s5p_list = fetch_S5P(date)
+    # latest_time = find_latest_time(viirs_list, s5p_list)
+    # frp_list, frp_path = fetch_FRP(date, latest_time)
 
-    #run loop and save files
-    run_loop_for_day(frp_list, frp_path,  viirs_list, s5p_list, date, latest_time)
+    # #run loop and save files
+    # run_loop_for_day(frp_list, frp_path,  viirs_list, s5p_list, date, latest_time)
   
     #run digitizer after all processing
     s5_data = read_s5p_coord(date)

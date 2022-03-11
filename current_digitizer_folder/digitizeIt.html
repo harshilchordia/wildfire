@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>plume digitize</title>
+    <meta charset="UTF-8">
 
     <script src="../libs/leaflet/leaflet.js"></script>
     <link rel="stylesheet" href="../libs/leaflet/leaflet.css"/>
@@ -61,53 +62,60 @@
 
 <script>
     var CartoDB_PositronNoLabels = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: 'abcd',
-            maxZoom: 20
-        }),
-        CartoDB_DarkMatterNoLabels = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: 'abcd',
-            maxZoom: 20
-        }),
-        googlemap = L.tileLayer('http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}', {
-            attribution: 'google'
-        }),
-        countryborder = L.geoJson(countries, {
-            style: function (feature) {
-                return {
-                    'weight': 1,
-                    'fill': false,
-                    noWrap: false
-                }
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
+    }),
+    CartoDB_DarkMatterNoLabels = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
+    }),
+    googlemap = L.tileLayer('http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}', {
+        attribution: 'google'
+    }),
+    label_light = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
+    }),
+    label_dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
+    }),
+    countryborder = L.geoJson(countries, {
+        style: function (feature) {
+            return {
+                'weight': 1,
+                'fill': false,
+                noWrap: false
             }
-        }),
-        c = new L.LatLng(-21, 180),
-        map = new L.Map('map', { center: c, zoom: 5 }),
-        drawnItems = L.featureGroup().addTo(map);
-    L.control.layers({
+        }
+    }),
+    baselayers_static = {
         'base light': CartoDB_PositronNoLabels,
         'base dark': CartoDB_DarkMatterNoLabels,
         'google': googlemap,
-        'rgb': rgbLayer.addTo(map),
-    }, {
-        'label light': L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: 'abcd',
-            maxZoom: 20
-        }),
-        'label dark': L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: 'abcd',
-            maxZoom: 20
-        }),
-        'countries': countryborder,
-        'emission': emissionLayer,
-        'firepixels': firepixelsLayer.addTo(map),
-        'plume layer': drawnItems 
-    }, { position: 'topleft', collapsed: false }).addTo(map);
+    },
+    overlayers_static = {
+        'label light': label_dark,
+        'countries': countryborder
+    },
+    c = new L.LatLng(-21, 180),
+    map = new L.Map('map', {center: c, zoom: 5 }),
+    drawnItems = L.featureGroup().addTo(map);
+    for (const [name, layer] of Object.entries(baselayers_dynamic)) {
+        layer.addTo(map);
+    }
+    overlayers_dynamic.firepixels.addTo(map);
+    L.control.layers(
+        {...baselayers_static, ...baselayers_dynamic},
+        {...overlayers_static, ...overlayers_dynamic, ...{'plume layer': drawnItems}},
+        { position: 'topleft', collapsed: false }
+    ).addTo(map);
     map.attributionControl.setPrefix('Digitize Tool by Jiangping He');
-    map.fitBounds(emissionLayer.getBounds());
+    map.fitBounds(firepixelsLayer.getBounds());
     map.addControl(new L.Control.Draw({
         edit: {
             featureGroup: drawnItems,
@@ -137,7 +145,7 @@
                 var data = drawnItems.toGeoJSON();
                 var convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
                 a.setAttribute('href', 'data:' + convertedData);
-                a.setAttribute('download','data.geojson');
+                a.setAttribute('download', geojson_output);
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
@@ -161,6 +169,20 @@
         poly_uid++;
         drawnItems.addLayer(layer);
     });
+    if(plums !== null) {
+        L.geoJson(plums).eachLayer(
+            function(l){
+                l.setStyle({
+                    'weight': 3,
+                    color: '#ffff00',
+                    fill: false
+                });
+                poly_uid = l.feature.properties.id;
+                l.bindPopup('id: ' + poly_uid);
+                drawnItems.addLayer(l);
+                poly_uid++;
+        });
+    }
 </script>
 </body>
 </html>

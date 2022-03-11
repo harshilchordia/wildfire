@@ -1,3 +1,5 @@
+
+
 full_path = '/Users/harshilchordia/Desktop/KCL_Research'
 
 all_dir = {     'viirs_raw':        'all_data/viirs/raw_data',

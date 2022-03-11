@@ -10,26 +10,26 @@ from libs.ui import Digitizer
 from collections import OrderedDict
 from dir_config import all_dir
 
-def run_digitizer(firepixels, rgb_image_path, s5p_emission_path, s5p_aus_crop_coord, rgb_coord):
+def run_digitizer(firepixels, rgb_image_path, s5p_emission_path,s5p_aus_crop_coord, rgb_coord):
 
-    i = 0
+
     firepixels_geojson = {
         "type": "FeatureCollection",
         "features": firepixels
     }
     layers = {
-        'htmlroot': all_dir['digitise_img'],
-        'output': s5p_emission_path[:-3]+'.geojson',
+        'htmlroot': 'demo',
+        'output': 'MODIS_AOD-fake.plume.geojson',
         'baselayers': OrderedDict({
-            "RGB {0}".format(i): {
-                'filename': rgb_image_path,
-                'bbox_lonlat':  [   [rgb_coord['xmin'], rgb_coord['ymin']]  ,   [rgb_coord['xmax'],rgb_coord['ymax']]   ]
+            'rgb': {
+                'filename': 'tonga_goes.png',
+                'bbox_lonlat':  [[176.838, -12.404], [192.92, -25.150]]
             }
         }),
         'overlayers': OrderedDict({
             'emission': {
-                'filename': s5p_emission_path,
-                'bbox_lonlat': s5p_aus_crop_coord
+                'filename': 'MODIS_AOD-fake.png',
+                'bbox_lonlat': [[169.55, -7.93], [190.86, -33.93]]
             },
             'firepixels': firepixels_geojson
         }),
